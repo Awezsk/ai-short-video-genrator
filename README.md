@@ -1,36 +1,202 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 AI Short Video Generator
 
-## Getting Started
+A full-stack SaaS application that uses Artificial Intelligence to automatically generate YouTube Shorts, TikTok videos, and Instagram Reels. This application allows users to generate scripts, create voiceovers, generate visuals, and render complete videos with captions—all from a simple text prompt.
 
-First, run the development server:
+![Project Banner](public/logo.svg)
 
-```bash
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [Project Structure](#-project-structure)
+- [Database & Authentication Setup](#-database--authentication-setup)
+- [Usage](#-usage)
+- [Deployment](#-deployment)
+- [Credits](#-credits)
+
+---
+
+## ✨ Features
+
+- **🤖 AI Content Generation**: Generates engaging video scripts using **Gemini AI**.
+- **🎨 AI Image Generation**: Creates unique, style-consistent images (Anime, 3D, Realistic, etc.) for each scene using Flux/SDXL models.
+- **🗣️ AI Voiceover**: Converts script to natural-sounding speech with multiple voice accents.
+- **📝 Automatic Captions**: Generates and overlays perfectly timed captions/subtitles on the video.
+- **🎞️ Video Rendering**: Renders high-quality videos in the cloud using **Remotion**.
+- **🔐 Authentication**: Secure Google Sign-In authentication using **Firebase**.
+- **💳 Credits System**: Integrated credits system to manage usage (SaaS model) with **PayPal** integration.
+- **⚡ Background Processing**: Uses **Inngest** for handling serverless background jobs (video generation queue).
+- **💾 Database**: Real-time data storage using **Convex**.
+- **📱 Responsive Dashboard**: Beautiful UI built with Tailwind CSS and Shadcn/UI (Dark Mode included).
+
+---
+
+## 🛠 Tech Stack
+
+**Frontend:**
+- **Next.js 15** (App Router)
+- **React.js**
+- **Tailwind CSS**
+- **Shadcn/UI**
+- **Lucide React**
+
+**Backend & Services:**
+- **Convex**: Backend-as-a-Service (Database & Real-time updates).
+- **Firebase**: User Authentication (Google Auth) & Storage.
+- **Inngest**: Event-driven queues for background video processing.
+- **Remotion**: Programmatic video creation.
+
+**AI APIs:**
+- **Gemini API**: Script generation.
+- **AI Guruji / Replicate**: Image & Audio generation.
+
+---
+
+## ⚙ Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+- **Git**
+
+You will need accounts for:
+- [Convex.dev](https://www.convex.dev/)
+- [Firebase Console](https://console.firebase.google.com/)
+- [Inngest](https://www.inngest.com/)
+- [Google Gemini API](https://ai.google.dev/)
+
+---
+
+## 📥 Installation
+
+1. **Clone the Repository**
+   ```bash
+   git clone [https://github.com/Awezsk/ai-short-video-genrator.git](https://github.com/Awezsk/ai-short-video-genrator.git)
+   cd ai-short-video-genrator
+
+
+2 .Install Dependencies
+
+Bash
+
+npm install
+# or
+yarn install
+Initialize Convex
+
+Bash
+
+npx convex dev
+Follow the prompts to log in and configure your Convex project.
+
+Initialize UI Components (Optional) If Shadcn is missing styles:
+
+Bash
+
+npx shadcn-ui@latest init
+🔐 Environment Variables
+Create a .env.local file in the root directory and add the following keys.
+
+Code snippet
+
+# Convex (Automatically added by npx convex dev)
+CONVEX_DEPLOYMENT=
+NEXT_PUBLIC_CONVEX_URL=
+
+# Gemini API (Script Generation)
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+
+# Firebase Config (Authentication)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# AI Image/Audio Generation (AI Guruji or Replicate)
+NEXT_PUBLIC_AI_GURU_API_KEY=your_api_key
+
+# PayPal (Payments)
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_client_id
+🗄 Database & Authentication Setup
+1. Firebase Authentication
+Go to Firebase Console -> Create Project.
+
+Navigate to Authentication -> Sign-in method.
+
+Enable Google.
+
+Copy the credentials to your .env.local.
+
+2. Convex Schema
+Ensure your convex/schema.ts includes the Users and Videos tables:
+
+TypeScript
+
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
+
+export default defineSchema({
+  users: defineTable({
+    name: v.string(),
+    email: v.string(),
+    imageUrl: v.string(),
+    credits: v.number(),
+  }),
+  videos: defineTable({
+    videoScript: v.any(),
+    audioUrl: v.string(),
+    captions: v.any(),
+    imageList: v.array(v.string()),
+    createdBy: v.string(),
+    status: v.string(), 
+  }),
+});
+🚀 Usage
+Start the Development Server
+
+Bash
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Visit http://localhost:3000.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run Inngest (Background Functions) In a separate terminal, run:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Bash
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npx inngest-cli@latest dev
+This opens the Inngest local dashboard (usually at http://localhost:8288) to handle the video generation queue.
 
-## Learn More
+Create a Video
 
-To learn more about Next.js, take a look at the following resources:
+Log in using Google.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Go to Dashboard.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Click "Create New Video".
 
-## Deploy on Vercel
+Select Topic, Style, and Duration.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Click Generate.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🚢 Deployment
+1. Deploy to Vercel
+Push your code to GitHub.
+
+Import the project into Vercel.
+
+Add all Environment Variables in Vercel settings.
+
+Deploy.
+
+2. Production Database
+Run this command to push your Convex schema to production:
+
+Bash
+
+npx convex deploy
+Update the NEXT_PUBLIC_CONVEX_URL in Vercel with your production Convex URL.
