@@ -73,35 +73,36 @@ You will need accounts for:
 ## 📥 Installation
 
 1. **Clone the Repository**
-   ```bash
-   git clone [https://github.com/Awezsk/ai-short-video-genrator.git](https://github.com/Awezsk/ai-short-video-genrator.git)
+```bash
+   git clone https://github.com/Awezsk/ai-short-video-genrator.git
    cd ai-short-video-genrator
+```
 
+2. **Install Dependencies**
+```bash
+   npm install
+   # or
+   yarn install
+```
 
-2 .Install Dependencies
+3. **Initialize Convex**
+```bash
+   npx convex dev
+```
+   Follow the prompts to log in and configure your Convex project.
 
-Bash
+4. **Initialize UI Components (Optional)**
+   If Shadcn is missing styles:
+```bash
+   npx shadcn-ui@latest init
+```
 
-npm install
-# or
-yarn install
-Initialize Convex
+---
 
-Bash
+## 🔐 Environment Variables
 
-npx convex dev
-Follow the prompts to log in and configure your Convex project.
-
-Initialize UI Components (Optional) If Shadcn is missing styles:
-
-Bash
-
-npx shadcn-ui@latest init
-🔐 Environment Variables
-Create a .env.local file in the root directory and add the following keys.
-
-Code snippet
-
+Create a `.env.local` file in the root directory and add the following keys:
+```env
 # Convex (Automatically added by npx convex dev)
 CONVEX_DEPLOYMENT=
 NEXT_PUBLIC_CONVEX_URL=
@@ -122,21 +123,23 @@ NEXT_PUBLIC_AI_GURU_API_KEY=your_api_key
 
 # PayPal (Payments)
 NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_client_id
-🗄 Database & Authentication Setup
-1. Firebase Authentication
-Go to Firebase Console -> Create Project.
+```
 
-Navigate to Authentication -> Sign-in method.
+---
 
-Enable Google.
+## 🗄 Database & Authentication Setup
 
-Copy the credentials to your .env.local.
+### 1. Firebase Authentication
 
-2. Convex Schema
-Ensure your convex/schema.ts includes the Users and Videos tables:
+1. Go to [Firebase Console](https://console.firebase.google.com/) -> Create Project.
+2. Navigate to **Authentication** -> **Sign-in method**.
+3. Enable **Google**.
+4. Copy the credentials to your `.env.local`.
 
-TypeScript
+### 2. Convex Schema
 
+Ensure your `convex/schema.ts` includes the Users and Videos tables:
+```typescript
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -156,47 +159,56 @@ export default defineSchema({
     status: v.string(), 
   }),
 });
-🚀 Usage
-Start the Development Server
+```
 
-Bash
+---
 
-npm run dev
-Visit http://localhost:3000.
+## 🚀 Usage
 
-Run Inngest (Background Functions) In a separate terminal, run:
+1. **Start the Development Server**
+```bash
+   npm run dev
+```
+   Visit http://localhost:3000.
 
-Bash
+2. **Run Inngest (Background Functions)**
+   In a separate terminal, run:
+```bash
+   npx inngest-cli@latest dev
+```
+   This opens the Inngest local dashboard (usually at http://localhost:8288) to handle the video generation queue.
 
-npx inngest-cli@latest dev
-This opens the Inngest local dashboard (usually at http://localhost:8288) to handle the video generation queue.
+3. **Create a Video**
+   - Log in using Google.
+   - Go to Dashboard.
+   - Click "Create New Video".
+   - Select Topic, Style, and Duration.
+   - Click Generate.
 
-Create a Video
+---
 
-Log in using Google.
+## 🚢 Deployment
 
-Go to Dashboard.
+### 1. Deploy to Vercel
 
-Click "Create New Video".
+1. Push your code to GitHub.
+2. Import the project into Vercel.
+3. Add all Environment Variables in Vercel settings.
+4. Deploy.
 
-Select Topic, Style, and Duration.
+### 2. Production Database
 
-Click Generate.
-
-🚢 Deployment
-1. Deploy to Vercel
-Push your code to GitHub.
-
-Import the project into Vercel.
-
-Add all Environment Variables in Vercel settings.
-
-Deploy.
-
-2. Production Database
 Run this command to push your Convex schema to production:
-
-Bash
-
+```bash
 npx convex deploy
-Update the NEXT_PUBLIC_CONVEX_URL in Vercel with your production Convex URL.
+```
+
+Update the `NEXT_PUBLIC_CONVEX_URL` in Vercel with your production Convex URL.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
