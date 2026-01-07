@@ -8,13 +8,15 @@ function Preview({ formData }) {
     return (
         <div className='relative'>
             <h2 className='mb-3 text-2xl'>Preview</h2>
-            <Image 
-                src={selectedVideoStyle?.image} 
-                alt={selectedVideoStyle?.name}
-                width={1000}
-                height={300}
-                className='w-full h-[70vh] object-cover rounded-xl'
-            />
+            {selectedVideoStyle?.image ? (
+                <Image 
+                    src={selectedVideoStyle.image} 
+                    alt={selectedVideoStyle?.name || ''}
+                    width={1000}
+                    height={300}
+                    className='w-full h-[70vh] object-cover rounded-xl'
+                />
+            ) : null}
             {formData?.caption && (
                 <h2 className={`${formData.caption.styles} absolute bottom-7 text-center w-full`}>
                     {formData.caption.name}
