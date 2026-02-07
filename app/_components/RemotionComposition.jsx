@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import { AbsoluteFill, Img, Sequence, useCurrentFrame, useVideoConfig, interpolate, Audio } from 'remotion';
 
-function RemotionComposition({videoData, setDurationInFrame}) {
+function RemotionComposition({videoData}) {  // ✅ REMOVED setDurationInFrame prop
     const caption = videoData?.captionJson;
     const {fps} = useVideoConfig();
     const imageList = videoData?.images;
@@ -17,12 +17,12 @@ function RemotionComposition({videoData, setDurationInFrame}) {
     
     const duration = getDurationFrame();
     
-    // Set duration in frame only once in useEffect
-    useEffect(() => {
-        if(videoData && duration > 0) {
-            setDurationInFrame(duration);
-        }
-    }, [videoData, duration])
+    // ✅ REMOVED THIS ENTIRE useEffect BLOCK
+    // useEffect(() => {
+    //     if(videoData && duration > 0) {
+    //         setDurationInFrame(duration);
+    //     }
+    // }, [videoData, duration])
 
     const getCurrentCaption = () => {
         // Add null check here

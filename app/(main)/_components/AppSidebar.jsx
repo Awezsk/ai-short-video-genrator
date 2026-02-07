@@ -35,8 +35,8 @@ const MenuItems=[
         icon:Search
       },
             {
-        title:'Billing',
-        url:'/billing',
+        title:'Team',
+        url:'/Team',
         icon:Wallet
       },
 

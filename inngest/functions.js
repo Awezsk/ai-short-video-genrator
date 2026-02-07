@@ -124,6 +124,52 @@ export const  GenerateVideoData=inngest.createFunction(
       }
     )
     
-    return 'Executed Successfully!'
+    const RenderVideo=await step.run(
+      "renderVideo",
+      async()=>{
+          //Render Video
+          const services = await getServices({
+            region: 'us-east1',
+            compatibleOnly: true,
+          });
+          
+          const serviceName = services[0].serviceName;
+          const result = await renderMediaOnCloudrun({  
+            serviceName,  
+            region: 'us-east1',  
+            serveUrl: process.env?.GCP_SERVE_URL,  
+            composition: 'youtubeShort',  
+            inputProps: {
+              videoData:{
+                  audioUrl:GenerateAudioFile, 
+                  captionJson:GenerateCaptions,
+                  images: GenrateImages
+              }
+            },  
+            codec: 'h264',  
+          });
+          if (result.type === 'success') {  
+            console.log(result.bucketName);  
+            console.log(result.renderId);
+          }
+          return result?.publicUrl;
+      }
+    )
+
+    const UpdateDownloadUrl=await step.run(
+      'UpdateDownloadUrl',
+      async()=>{
+        const result = await convex.mutation(api.videoData.UpdateVideoRecord, {
+          recordId: recordId,        
+          audioUrl: GenerateAudioFile, 
+          captionJson: GenerateCaptions, 
+          images: GenerateImage,
+          downloadUrl:RenderVideo
+
+        });
+      }
+    )
+
+    return RenderVideo;
   }
 )

@@ -1,38 +1,70 @@
 "use client"
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import React from 'react'
+import React, { useState } from 'react'
 import { auth } from '../../configs/firebaseConfigs';
+import { useRouter } from 'next/navigation';
+
+// ✅ BEST PRACTICE: Create provider once outside component
+const googleProvider = new GoogleAuthProvider();
 
 function Authentication({children}) {
-    const provider = new GoogleAuthProvider();
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
 
-    const onSignInClick=()=>{
-        signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    console.log(user)
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  }).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
+    const onSignInClick = async () => {
+        if (isLoading) return;
+        
+        setIsLoading(true);
+        
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            
+            console.log('User signed in successfully:', user);
+            
+            // Redirect to dashboard
+            router.push('/dashboard');
+            
+        } catch (error) {
+            console.error('Sign-in error:', error);
+            
+            // User-friendly error messages
+            switch (error.code) {
+                case 'auth/unauthorized-domain':
+                    alert('⚠️ This domain is not authorized. Please contact support.');
+                    break;
+                case 'auth/popup-closed-by-user':
+                    console.log('User closed the popup');
+                    break;
+                case 'auth/popup-blocked':
+                    alert('⚠️ Please allow popups for this site and try again.');
+                    break;
+                case 'auth/cancelled-popup-request':
+                    console.log('Popup request cancelled');
+                    break;
+                default:
+                    alert(`⚠️ Sign-in failed: ${error.message}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
-  return (
-    <div onClick={onSignInClick}>
-      {children}
-    </div>
-  )
+    
+    return (
+        <div 
+            onClick={onSignInClick} 
+            className={isLoading ? 'cursor-wait opacity-50' : 'cursor-pointer'}
+        >
+            {isLoading ? (
+                <div className="flex items-center gap-2">
+                    <span className="animate-spin">⏳</span>
+                    {children}
+                </div>
+            ) : (
+                children
+            )}
+        </div>
+    )
 }
 
 export default Authentication
